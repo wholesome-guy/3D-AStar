@@ -8,6 +8,7 @@ using UnityEngine;
 public class GridNode
 {
     public Vector3Int grid_Position;
+    public bool is_Navigateable;
 
     //distance from start node
     public int gCost;
@@ -22,6 +23,7 @@ public class GridNode
     public GridNode(Vector3Int grid_position)
     {
         this.grid_Position = grid_position;
+        this.is_Navigateable = true;
     }
 
     public void calculate_FCost()
@@ -50,7 +52,7 @@ public class GridSystem
         this.cell_Size = cell_Size;
         this._Origin = origin;
 
-        bool debug = false;
+        bool debug = true;
 
         grid_Array = new GridNode[x_Index, y_Index, z_Index];
 

@@ -86,6 +86,11 @@ public class AstarAlgorithm
             {
                //close the loop if its in closed list
                 if (closed_List.Contains(neighbor_node)) continue;
+                if (!neighbor_node.is_Navigateable)
+                {
+                    closed_List.Add(neighbor_node);
+                    continue;
+                }
 
                 //estimate g cost
                 int tentative_gcost = current_node.gCost + calculate_Move_Cost(current_node, neighbor_node);
