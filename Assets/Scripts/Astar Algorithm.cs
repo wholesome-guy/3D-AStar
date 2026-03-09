@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq.Expressions;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class AstarAlgorithm
+public class AstarAlgorithm : Physics
 {
-    private GridSystem _Grid;
+    public GridSystem _Grid;
     //Open list is the nodes TO BE SEARCHED
     private List<GridNode> open_List;
     //Closed list is the nodes which are already SEARCHED
@@ -21,15 +22,17 @@ public class AstarAlgorithm
     private const int move_Diagonal3D_Cost = 17;
 
     private Vector3 _Origin;
+    private float cell_Size;
 
     //Constructor
     public AstarAlgorithm(int x,int y, int z, float cell_size,Vector3 origin)
     {
         _Grid = new GridSystem(x, y, z, cell_size, origin);
         _Origin = origin;
+        cell_Size = cell_size;
     }
 
-    public List<GridNode> find_Path(Vector3 start_position, Vector3 end_position)
+    public List<Vector3> find_Path(Vector3 start_position, Vector3 end_position)
     {
         //start and end nodes intialised
         GridNode start_node = _Grid.get_GridNode(start_position,_Origin);
@@ -86,7 +89,8 @@ public class AstarAlgorithm
             {
                //close the loop if its in closed list
                 if (closed_List.Contains(neighbor_node)) continue;
-                if (!neighbor_node.is_Navigateable)
+
+                if (!is_node_Navigatable(neighbor_node))
                 {
                     closed_List.Add(neighbor_node);
                     continue;
@@ -208,12 +212,12 @@ public class AstarAlgorithm
         return _Grid.get_GridNode(new Vector3Int(x,y,z));
     }
 
-    private List<GridNode> get_Path(GridNode node)
+    private List<Vector3> get_Path(GridNode node)
     {
-        List<GridNode> path_list = new List<GridNode>();
+        List<GridNode> node_list = new List<GridNode>();
 
         //end node added to path
-        path_list.Add(node);
+        node_list.Add(node);
 
         GridNode current_node = node;
 
@@ -222,13 +226,37 @@ public class AstarAlgorithm
         while (current_node.previous_Node != null)
         {
             //adding previous node
-            path_list.Add(current_node.previous_Node);
+            node_list.Add(current_node.previous_Node);
             //current node is now previours Until it reaches Start, which has no previous node
             current_node = current_node.previous_Node;
         }
         //reverse the list to get true path
-        path_list.Reverse();
+        node_list.Reverse();
+
+        List<Vector3> path_list = new List<Vector3>(node_list.Count);
+
+        for (int i = 0; i < node_list.Count; i++)
+        {
+            path_list.Add(_Grid.get_WorldPosition(node_list[i].grid_Position, _Origin));
+        }
         return path_list;
 
+    }
+
+    public bool is_node_Navigatable(GridNode node)
+    {
+        Vector3 world_Position = _Grid.get_WorldPosition(node.grid_Position, _Origin);
+
+        Collider[] hits = Physics.OverlapSphere(world_Position, cell_Size * 0.5f);
+
+        foreach (Collider hit in hits)
+        {
+            // Ignore triggers
+            if (!hit.isTrigger)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }

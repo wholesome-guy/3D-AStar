@@ -7,7 +7,7 @@ using UnityEngine;
 public class Testing : MonoBehaviour
 {
     private AstarAlgorithm Astar;
-    private List<GridNode> path;
+    private List<Vector3> path;
     [SerializeField] private Transform start;
     [SerializeField] private Transform end;
 
@@ -15,8 +15,7 @@ public class Testing : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Astar = new AstarAlgorithm(5, 5, 5 , 1f, new Vector3(0,0,0));
-        
+        Astar = new AstarAlgorithm(5, 5, 5 , 1f, new Vector3(1,0,0));  
     }
     private void Update()
     {
@@ -25,7 +24,7 @@ public class Testing : MonoBehaviour
         {
             for (int i = 0; i < path.Count - 1; i++)
             {
-                Debug.DrawLine(path[i].grid_Position, path[i + 1].grid_Position, Color.green, 10f);
+                Debug.DrawLine(path[i], path[i + 1], Color.green, 1f);
             }
         }
     }

@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Mathematics;
 using UnityEngine;
 
 
@@ -8,7 +5,6 @@ using UnityEngine;
 public class GridNode
 {
     public Vector3Int grid_Position;
-    public bool is_Navigateable;
 
     //distance from start node
     public int gCost;
@@ -23,13 +19,14 @@ public class GridNode
     public GridNode(Vector3Int grid_position)
     {
         this.grid_Position = grid_position;
-        this.is_Navigateable = true;
     }
 
     public void calculate_FCost()
     {
         fCost = gCost + hCost;
     }
+
+    
 
 }
 public class GridSystem
@@ -52,8 +49,6 @@ public class GridSystem
         this.cell_Size = cell_Size;
         this._Origin = origin;
 
-        bool debug = true;
-
         grid_Array = new GridNode[x_Index, y_Index, z_Index];
 
         for (int i = 0; i < grid_Array.GetLength(0); i++)
@@ -63,34 +58,18 @@ public class GridSystem
                 for (int k = 0; k < grid_Array.GetLength(2); k++)
                 {
                     grid_Array[i, j, k] = new GridNode(new Vector3Int(i, j, k));
-                    if (debug)
-                    {
-                        Debug.DrawLine(get_WorldPosition(i, j, k, _Origin), get_WorldPosition(i + 1, j, k, _Origin), Color.white, float.MaxValue);
-                        Debug.DrawLine(get_WorldPosition(i, j, k, _Origin), get_WorldPosition(i, j + 1, k, _Origin), Color.white, float.MaxValue);
-                        Debug.DrawLine(get_WorldPosition(i, j, k, _Origin), get_WorldPosition(i, j, k + 1, _Origin), Color.white, float.MaxValue);
-
-                        Debug.DrawLine(get_WorldPosition(i, j + 1, k + 1, _Origin), get_WorldPosition(i + 1, j + 1, k + 1, _Origin), Color.white, float.MaxValue);
-                        Debug.DrawLine(get_WorldPosition(i + 1, j, k, _Origin), get_WorldPosition(i + 1, j, k + 1, _Origin), Color.white, float.MaxValue);
-                        Debug.DrawLine(get_WorldPosition(i, j, k + 1, _Origin), get_WorldPosition(i + 1, j, k + 1, _Origin), Color.white, float.MaxValue);
-
-                        Debug.DrawLine(get_WorldPosition(i + 1, j, k, _Origin), get_WorldPosition(i + 1, j + 1, k, _Origin), Color.white, float.MaxValue);
-                        Debug.DrawLine(get_WorldPosition(i, j, k + 1, _Origin), get_WorldPosition(i, j + 1, k + 1, _Origin), Color.white, float.MaxValue);
-                        Debug.DrawLine(get_WorldPosition(i + 1, j, k + 1, _Origin), get_WorldPosition(i + 1, j + 1, k + 1, _Origin), Color.white, float.MaxValue);
-
-                        Debug.DrawLine(get_WorldPosition(i, j + 1, k, _Origin), get_WorldPosition(i + 1, j + 1, k, _Origin), Color.white, float.MaxValue);
-                        Debug.DrawLine(get_WorldPosition(i, j + 1, k, _Origin), get_WorldPosition(i, j + 1, k + 1, _Origin), Color.white, float.MaxValue);
-                        Debug.DrawLine(get_WorldPosition(i + 1, j + 1, k, _Origin), get_WorldPosition(i + 1, j + 1, k + 1, _Origin), Color.white, float.MaxValue);
-                    }
-                   
                 }
             }
         }
-
     }
 
     public Vector3 get_WorldPosition(int x, int y, int z,Vector3 origin) 
     {
         return new Vector3(x, y, z) * cell_Size + origin;
+    }
+    public Vector3 get_WorldPosition(Vector3 grid_Position, Vector3 origin)
+    {
+        return grid_Position * cell_Size + origin;
     }
 
     public Vector3Int get_GridPosition(Vector3 world_Position,Vector3 origin)
@@ -114,4 +93,7 @@ public class GridSystem
     {
         return new Vector3Int(x_Index,y_Index,z_Index);
     }
+
+    
+
 }
